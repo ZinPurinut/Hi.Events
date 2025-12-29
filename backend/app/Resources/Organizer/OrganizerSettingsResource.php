@@ -21,6 +21,8 @@ class OrganizerSettingsResource extends BaseResource
             'default_allow_attendee_self_edit' => $this->getDefaultAllowAttendeeSelfEdit(),
             'social_media_handles' => $this->getSocialMediaHandles(),
             'homepage_theme_settings' => $this->getHomepageThemeSettings(),
+            'homepage_event_sort_by' => $this->getHomepageEventSortBy(),
+            'homepage_event_sort_direction' => $this->getHomepageEventSortDirection(),
             'homepage_visibility' => $this->getHomepageVisibility(),
             'homepage_password' => $this->getHomepagePassword(),
             'website_url' => $this->getWebsiteUrl(),

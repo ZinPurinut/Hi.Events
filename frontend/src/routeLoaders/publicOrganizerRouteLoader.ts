@@ -43,12 +43,16 @@ export const publicOrganizerRouteLoader = async ({params, request}: LoaderFuncti
             };
         }
 
+        // Use custom sorting from organizer settings, or fall back to defaults
+        const sortBy = organizer?.settings?.homepage_event_sort_by || 'start_date';
+        const sortDirection = organizer?.settings?.homepage_event_sort_direction || (isPastEvents ? 'desc' : 'asc');
+
         const eventsData = await getQueryClient().fetchQuery(
             getOrganizerPublicEventsQuery(organizerId, {
                 pageNumber: pageNumber,
                 perPage: 30,
-                sortBy: 'start_date',
-                sortDirection: isPastEvents ? 'desc' : 'asc',
+                sortBy: sortBy,
+                sortDirection: sortDirection,
                 ...filter
             })
         );

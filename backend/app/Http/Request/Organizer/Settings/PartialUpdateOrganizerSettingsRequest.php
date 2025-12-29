@@ -65,6 +65,10 @@ class PartialUpdateOrganizerSettingsRequest extends BaseRequest
             'homepage_theme_settings.mode' => ['nullable', 'string', Rule::in(['light', 'dark'])],
             'homepage_theme_settings.background_type' => ['nullable', 'string', Rule::in(HomepageBackgroundType::valuesArray())],
 
+            // Homepage event sorting
+            'homepage_event_sort_by' => ['sometimes', 'nullable', 'string', Rule::in(['start_date', 'title', 'created_at'])],
+            'homepage_event_sort_direction' => ['sometimes', 'nullable', 'string', Rule::in(['asc', 'desc'])],
+
             // SEO
             'seo_keywords' => ['sometimes', 'nullable', 'string', 'max:255'],
             'seo_title' => ['sometimes', 'nullable', 'string', 'max:255'],

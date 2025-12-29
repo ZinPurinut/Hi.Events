@@ -403,6 +403,8 @@ export interface OrganizerSettings {
     default_allow_attendee_self_edit?: boolean;
     homepage_visibility: 'PUBLIC' | 'PRIVATE' | 'PASSWORD_PROTECTED';
     homepage_theme_settings: HomepageThemeSettings;
+    homepage_event_sort_by?: string;
+    homepage_event_sort_direction?: 'asc' | 'desc';
     website_url?: string;
     location_details?: VenueAddress;
     social_media_handles?: {

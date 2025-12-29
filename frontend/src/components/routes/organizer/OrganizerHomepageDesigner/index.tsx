@@ -9,7 +9,7 @@ import {showSuccess} from "../../../../utilites/notifications.tsx";
 import {t} from "@lingui/macro";
 import {useForm} from "@mantine/form";
 import {Accordion, Button, Group, Stack, Text} from "@mantine/core";
-import {IconColorPicker, IconHelp, IconPalette, IconPhoto} from "@tabler/icons-react";
+import {IconColorPicker, IconHelp, IconPalette, IconPhoto, IconSortDescending} from "@tabler/icons-react";
 import {Tooltip} from "../../../common/Tooltip";
 import {LoadingMask} from "../../../common/LoadingMask";
 import {CustomSelect} from "../../../common/CustomSelect";
@@ -23,6 +23,8 @@ import {computeThemeVariables, validateThemeSettings} from "../../../../utilites
 
 interface FormValues {
     homepage_theme_settings: Partial<HomepageThemeSettings>;
+    homepage_event_sort_by?: string;
+    homepage_event_sort_direction?: 'asc' | 'desc';
 }
 
 const OrganizerHomepageDesigner = () => {
@@ -38,7 +40,7 @@ const OrganizerHomepageDesigner = () => {
 
     const [iframeSrc, setIframeSrc] = useState<string | null>(null);
     const [iframeLoaded, setIframeLoaded] = useState(false);
-    const [accordionValue, setAccordionValue] = useState<string[]>(['images', 'theme']);
+    const [accordionValue, setAccordionValue] = useState<string[]>(['images', 'theme', 'sorting']);
     const [lastCoverId, setLastCoverId] = useState<IdParam | null>(null);
     const [lastLogoId, setLastLogoId] = useState<IdParam | null>(null);
 
@@ -53,6 +55,8 @@ const OrganizerHomepageDesigner = () => {
                 mode: 'light',
                 background_type: 'COLOR',
             },
+            homepage_event_sort_by: 'start_date',
+            homepage_event_sort_direction: 'asc',
         }
     });
 
@@ -65,6 +69,8 @@ const OrganizerHomepageDesigner = () => {
 
             form.setValues({
                 homepage_theme_settings: themeSettings,
+                homepage_event_sort_by: settings.homepage_event_sort_by || 'start_date',
+                homepage_event_sort_direction: settings.homepage_event_sort_direction || 'asc',
             });
         }
     }, [organizerSettingsQuery.isFetched, organizerSettingsQuery.data]);
@@ -80,6 +86,8 @@ const OrganizerHomepageDesigner = () => {
 
         const organizerSettings: Partial<OrganizerSettings> = {
             homepage_theme_settings: validatedTheme,
+            homepage_event_sort_by: values.homepage_event_sort_by,
+            homepage_event_sort_direction: values.homepage_event_sort_direction,
         };
 
         updateMutation.mutate(
@@ -269,6 +277,66 @@ const OrganizerHomepageDesigner = () => {
                                         </Stack>
                                     </fieldset>
                                 </form>
+                            </Accordion.Panel>
+                        </Accordion.Item>
+
+                        <Accordion.Item value="sorting" className={classes.accordionItem}>
+                            <Accordion.Control icon={<IconSortDescending size={20}/>}>
+                                <Text fw={500}>{t`Event Sorting`}</Text>
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                <Stack gap="md">
+                                    <CustomSelect
+                                        optionList={[
+                                            {
+                                                label: t`Start Date`,
+                                                value: 'start_date',
+                                                description: t`Sort events by their start date`,
+                                            },
+                                            {
+                                                label: t`Title`,
+                                                value: 'title',
+                                                description: t`Sort events alphabetically by title`,
+                                            },
+                                            {
+                                                label: t`Created Date`,
+                                                value: 'created_at',
+                                                description: t`Sort events by creation date`,
+                                            },
+                                        ]}
+                                        label={t`Sort By`}
+                                        name={'homepage_event_sort_by'}
+                                        value={form.values.homepage_event_sort_by || 'start_date'}
+                                        onChange={(value) => form.setFieldValue('homepage_event_sort_by', Array.isArray(value) ? value[0] : value)}
+                                    />
+
+                                    <CustomSelect
+                                        optionList={[
+                                            {
+                                                label: form.values.homepage_event_sort_by === 'title' ? t`A to Z` : t`Ascending`,
+                                                value: 'asc',
+                                                description: form.values.homepage_event_sort_by === 'start_date'
+                                                    ? t`Earliest events first`
+                                                    : form.values.homepage_event_sort_by === 'title'
+                                                    ? t`Sort A to Z`
+                                                    : t`Oldest first`,
+                                            },
+                                            {
+                                                label: form.values.homepage_event_sort_by === 'title' ? t`Z to A` : t`Descending`,
+                                                value: 'desc',
+                                                description: form.values.homepage_event_sort_by === 'start_date'
+                                                    ? t`Latest events first`
+                                                    : form.values.homepage_event_sort_by === 'title'
+                                                    ? t`Sort Z to A`
+                                                    : t`Newest first`,
+                                            },
+                                        ]}
+                                        label={t`Sort Direction`}
+                                        name={'homepage_event_sort_direction'}
+                                        value={form.values.homepage_event_sort_direction || 'asc'}
+                                        onChange={(value) => form.setFieldValue('homepage_event_sort_direction', Array.isArray(value) ? value[0] : value as 'asc' | 'desc')}
+                                    />
+                                </Stack>
                             </Accordion.Panel>
                         </Accordion.Item>
                     </Accordion>

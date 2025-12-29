@@ -17,12 +17,16 @@ export const organizerPreviewRouteLoader = async ({params}: LoaderFunctionArgs) 
     try {
         const organizer = await getQueryClient().fetchQuery(getOrganizerPublicQuery(organizerId));
 
+        // Use custom sorting from organizer settings, or fall back to defaults
+        const sortBy = organizer?.settings?.homepage_event_sort_by || 'start_date';
+        const sortDirection = organizer?.settings?.homepage_event_sort_direction || 'asc';
+
         const eventsData = await getQueryClient().fetchQuery(
             getOrganizerPublicEventsQuery(organizerId, {
                 pageNumber: 1,
                 perPage: 30,
-                sortBy: 'start_date',
-                sortDirection: 'asc',
+                sortBy: sortBy,
+                sortDirection: sortDirection,
                 additionalParams: {
                     eventsStatus: 'upcoming',
                 },

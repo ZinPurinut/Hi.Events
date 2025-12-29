@@ -29,6 +29,8 @@ abstract class OrganizerSettingDomainObjectAbstract extends \HiEvents\DomainObje
     final public const DEFAULT_SHOW_MARKETING_OPT_IN = 'default_show_marketing_opt_in';
     final public const DEFAULT_PASS_PLATFORM_FEE_TO_BUYER = 'default_pass_platform_fee_to_buyer';
     final public const DEFAULT_ALLOW_ATTENDEE_SELF_EDIT = 'default_allow_attendee_self_edit';
+    final public const HOMEPAGE_EVENT_SORT_BY = 'homepage_event_sort_by';
+    final public const HOMEPAGE_EVENT_SORT_DIRECTION = 'homepage_event_sort_direction';
 
     protected int $id;
     protected int $organizer_id;
@@ -49,6 +51,8 @@ abstract class OrganizerSettingDomainObjectAbstract extends \HiEvents\DomainObje
     protected bool $default_show_marketing_opt_in = true;
     protected bool $default_pass_platform_fee_to_buyer = false;
     protected bool $default_allow_attendee_self_edit = true;
+    protected ?string $homepage_event_sort_by = 'start_date';
+    protected ?string $homepage_event_sort_direction = 'asc';
 
     public function toArray(): array
     {
@@ -72,6 +76,8 @@ abstract class OrganizerSettingDomainObjectAbstract extends \HiEvents\DomainObje
                     'default_show_marketing_opt_in' => $this->default_show_marketing_opt_in ?? null,
                     'default_pass_platform_fee_to_buyer' => $this->default_pass_platform_fee_to_buyer ?? null,
                     'default_allow_attendee_self_edit' => $this->default_allow_attendee_self_edit ?? null,
+                    'homepage_event_sort_by' => $this->homepage_event_sort_by ?? null,
+                    'homepage_event_sort_direction' => $this->homepage_event_sort_direction ?? null,
                 ];
     }
 
@@ -283,5 +289,27 @@ abstract class OrganizerSettingDomainObjectAbstract extends \HiEvents\DomainObje
     public function getDefaultAllowAttendeeSelfEdit(): bool
     {
         return $this->default_allow_attendee_self_edit;
+    }
+
+    public function setHomepageEventSortBy(?string $homepage_event_sort_by): self
+    {
+        $this->homepage_event_sort_by = $homepage_event_sort_by;
+        return $this;
+    }
+
+    public function getHomepageEventSortBy(): ?string
+    {
+        return $this->homepage_event_sort_by;
+    }
+
+    public function setHomepageEventSortDirection(?string $homepage_event_sort_direction): self
+    {
+        $this->homepage_event_sort_direction = $homepage_event_sort_direction;
+        return $this;
+    }
+
+    public function getHomepageEventSortDirection(): ?string
+    {
+        return $this->homepage_event_sort_direction;
     }
 }

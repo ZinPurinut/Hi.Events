@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Script to show DATE & TIME field in Checkout Summary page
-# This will uncomment the Event Date display in the EventDetails component
+# Script to show DATE & TIME field in Ticket Display
+# This will affect: Checkout Summary, Print Ticket, and Print All pages
 
 set -e
 
-FRONTEND_FILE="frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx"
-BACKUP_FILE="frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx.backup"
+FRONTEND_FILE="frontend/src/components/common/AttendeeTicket/index.tsx"
+BACKUP_FILE="frontend/src/components/common/AttendeeTicket/index.tsx.backup"
 
 echo "================================================"
-echo "Enabling Event Date & Time in Checkout Summary"
+echo "Enabling Date & Time in Ticket Display"
 echo "================================================"
 
 # Check if file exists
@@ -18,21 +18,29 @@ if [ ! -f "$FRONTEND_FILE" ]; then
     exit 1
 fi
 
-# Check if already enabled
-if ! grep -q "// DISABLED:" "$FRONTEND_FILE"; then
-    echo "⚠️  Event Date & Time is already enabled!"
+# Check if backup exists
+if [ ! -f "$BACKUP_FILE" ]; then
+    echo "⚠️  No backup file found. Date & Time is already enabled or was never disabled."
     exit 0
 fi
 
-echo "🔧 Restoring frontend code..."
+# Check if already enabled (no false && marker found)
+if ! grep -q "{false && <div className={classes.detailRow}>" "$FRONTEND_FILE"; then
+    echo "⚠️  Date & Time is already enabled!"
+    exit 0
+fi
 
-# Uncomment the DetailItem that shows Event Date
-sed -i.tmp 's/^\/\/ DISABLED: //' "$FRONTEND_FILE"
+echo "🔧 Restoring frontend code from backup..."
 
-# Remove temporary file
-rm -f "${FRONTEND_FILE}.tmp"
+# Restore from backup
+cp "$BACKUP_FILE" "$FRONTEND_FILE"
 
-echo "✅ Event Date & Time field has been enabled!"
+echo "✅ Date & Time field has been enabled!"
+echo ""
+echo "📍 This affects the following pages:"
+echo "   • Checkout Summary (/checkout/{id}/summary)"
+echo "   • Print Ticket (/product/{eventId}/{attendeeId})"
+echo "   • Print All (/order/{eventId}/{orderId}/print)"
 echo ""
 echo "📌 Next steps:"
 echo "   1. Rebuild the frontend:"

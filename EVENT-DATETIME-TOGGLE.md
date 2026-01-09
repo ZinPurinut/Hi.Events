@@ -2,15 +2,15 @@
 
 ## Overview
 
-This directory contains two shell scripts to toggle the visibility of the **DATE & TIME** field on the Checkout Summary page.
+This directory contains two shell scripts to toggle the visibility of the **DATE & TIME** field on ticket displays across multiple pages.
 
 ## Scripts
 
 ### 1. `disable-event-datetime.sh`
-Hides the Event Date & Time field from the Checkout Summary page.
+Hides the Event Date & Time field from ticket displays.
 
 ### 2. `enable-event-datetime.sh`
-Shows the Event Date & Time field on the Checkout Summary page.
+Shows the Event Date & Time field on ticket displays.
 
 ## Usage
 
@@ -30,7 +30,7 @@ Shows the Event Date & Time field on the Checkout Summary page.
 
 1. **Backup**: The first time you run `disable-event-datetime.sh`, a backup file will be created at:
    ```
-   frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx.backup
+   frontend/src/components/common/AttendeeTicket/index.tsx.backup
    ```
 
 2. **Rebuild Required**: After running either script, you need to rebuild the frontend and restart Docker:
@@ -42,45 +42,66 @@ Shows the Event Date & Time field on the Checkout Summary page.
    cd docker/all-in-one && docker compose restart
    ```
 
-3. **Affected Page**: These scripts modify the Checkout Summary page shown after a customer completes a ticket purchase.
+3. **Affected Pages**: These scripts modify the ticket display shown on:
+   - **Checkout Summary**: `/checkout/{eventId}/{orderShortId}/summary`
+   - **Print Ticket**: `/product/{eventId}/{attendeeId}`
+   - **Print All Tickets**: `/order/{eventId}/{orderShortId}/print`
    - Example URL: `https://conference.devz.nida.ac.th/checkout/17/o_XXXXX/summary`
 
 ## What Gets Modified
 
-The scripts modify the `EventDetails` component in:
+The scripts modify the `AttendeeTicket` component in:
 ```
-frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx
+frontend/src/components/common/AttendeeTicket/index.tsx
 ```
 
-Specifically, they comment/uncomment the `DetailItem` component that displays:
-- **Label**: "Event Date"
-- **Icon**: Calendar icon (IconCalendarEvent)
-- **Value**: Event date range
+Specifically, they enable/disable the date & time display section that shows:
+- **Label**: "Date & Time"
+- **Value**: Event date and time with timezone (e.g., "Jan 12, 2026 9:00am")
 
 ## Example
 
 **Before (Enabled)**:
 ```
-Event Details
-┌─────────────────────┬─────────────────────┐
-│ 📅 Event Date       │ 📍 Location         │
-│ Jan 15, 2026        │ Bangkok, Thailand   │
-├─────────────────────┼─────────────────────┤
-│ 🕐 Timezone         │ 🏢 Organizer        │
-│ Asia/Bangkok        │ Event Organizer     │
-└─────────────────────┴─────────────────────┘
+Ticket Card
+┌────────────────────────────────────┐
+│ NIC - NIDA Conference 2026         │
+│ Free                                │
+├────────────────────────────────────┤
+│ DATE & TIME                         │
+│ Jan 12, 2026 9:00am                 │
+│                                     │
+│ ORGANIZER                           │
+│ National Institute (NIDA)           │
+│                                     │
+│ LOCATION                            │
+│ 148 Seri Thai Rd, Bangkok          │
+│                                     │
+│ TICKET TYPE                         │
+│ Registration for Day 2              │
+├────────────────────────────────────┤
+│         [QR CODE]                   │
+└────────────────────────────────────┘
 ```
 
 **After (Disabled)**:
 ```
-Event Details
-┌─────────────────────┬─────────────────────┐
-│ 📍 Location         │ 🕐 Timezone         │
-│ Bangkok, Thailand   │ Asia/Bangkok        │
-├─────────────────────┼─────────────────────┤
-│ 🏢 Organizer        │                     │
-│ Event Organizer     │                     │
-└─────────────────────┴─────────────────────┘
+Ticket Card
+┌────────────────────────────────────┐
+│ NIC - NIDA Conference 2026         │
+│ Free                                │
+├────────────────────────────────────┤
+│ ORGANIZER                           │
+│ National Institute (NIDA)           │
+│                                     │
+│ LOCATION                            │
+│ 148 Seri Thai Rd, Bangkok          │
+│                                     │
+│ TICKET TYPE                         │
+│ Registration for Day 2              │
+├────────────────────────────────────┤
+│         [QR CODE]                   │
+└────────────────────────────────────┘
 ```
 
 ## Troubleshooting
@@ -100,14 +121,15 @@ cd ../docker/all-in-one && docker compose restart
 ### Restore original file
 If something goes wrong, you can restore from backup:
 ```bash
-cp frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx.backup \
-   frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx
+cp frontend/src/components/common/AttendeeTicket/index.tsx.backup \
+   frontend/src/components/common/AttendeeTicket/index.tsx
 ```
 
 ## Technical Details
 
-- **Method**: Scripts add/remove `// DISABLED:` comments to code lines
-- **Lines Modified**: Lines 303-307 in the index.tsx file
+- **Method**: Uses conditional rendering (`{false && ...}`) to disable the component
+- **Lines Modified**: Lines 74-79 in AttendeeTicket/index.tsx
+- **Valid JSX**: The modification maintains valid TypeScript/JSX syntax
 - **Safe**: Original code is preserved in backup file
 - **Reversible**: Can toggle between enabled/disabled states anytime
 

@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Script to hide DATE & TIME field in Checkout Summary page
-# This will comment out the Event Date display in the EventDetails component
+# Script to hide DATE & TIME field in Ticket Display
+# This will affect: Checkout Summary, Print Ticket, and Print All pages
 
 set -e
 
-FRONTEND_FILE="frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx"
-BACKUP_FILE="frontend/src/components/routes/product-widget/OrderSummaryAndProducts/index.tsx.backup"
+FRONTEND_FILE="frontend/src/components/common/AttendeeTicket/index.tsx"
+BACKUP_FILE="frontend/src/components/common/AttendeeTicket/index.tsx.backup"
 
 echo "================================================"
-echo "Disabling Event Date & Time in Checkout Summary"
+echo "Disabling Date & Time in Ticket Display"
 echo "================================================"
 
 # Check if file exists
@@ -26,27 +26,24 @@ if [ ! -f "$BACKUP_FILE" ]; then
 fi
 
 # Check if already disabled
-if grep -q "// DISABLED: <DetailItem" "$FRONTEND_FILE"; then
-    echo "⚠️  Event Date & Time is already disabled!"
+if grep -q "{false && <div className={classes.detailRow}>" "$FRONTEND_FILE"; then
+    echo "⚠️  Date & Time is already disabled!"
     exit 0
 fi
 
 echo "🔧 Modifying frontend code..."
 
-# Comment out the DetailItem that shows Event Date (lines 303-307)
-# We need to comment the entire block including the closing />
-sed -i.tmp \
-    -e '303s/^/\/\/ DISABLED: /' \
-    -e '304s/^/\/\/ DISABLED: /' \
-    -e '305s/^/\/\/ DISABLED: /' \
-    -e '306s/^/\/\/ DISABLED: /' \
-    -e '307s/^/\/\/ DISABLED: /' \
-    "$FRONTEND_FILE"
+# Use conditional rendering (false &&) to disable the Date & Time section
+# This keeps valid JSX syntax and prevents rendering
+sed -i '74s|<div className={classes.detailRow}>|{false \&\& <div className={classes.detailRow}>|' "$FRONTEND_FILE"
+sed -i '79s|</div>|</div>}|' "$FRONTEND_FILE"
 
-# Remove temporary file
-rm -f "${FRONTEND_FILE}.tmp"
-
-echo "✅ Event Date & Time field has been disabled!"
+echo "✅ Date & Time field has been disabled!"
+echo ""
+echo "📍 This affects the following pages:"
+echo "   • Checkout Summary (/checkout/{id}/summary)"
+echo "   • Print Ticket (/product/{eventId}/{attendeeId})"
+echo "   • Print All (/order/{eventId}/{orderId}/print)"
 echo ""
 echo "📌 Next steps:"
 echo "   1. Rebuild the frontend:"

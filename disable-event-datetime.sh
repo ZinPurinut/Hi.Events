@@ -26,7 +26,7 @@ if [ ! -f "$BACKUP_FILE" ]; then
 fi
 
 # Check if already disabled
-if grep -q "{false && <div className={classes.detailRow}>" "$FRONTEND_FILE"; then
+if grep -q "{false && <div className={classes\.detailRow}>" "$FRONTEND_FILE"; then
     echo "⚠️  Date & Time is already disabled!"
     exit 0
 fi
@@ -35,8 +35,8 @@ echo "🔧 Modifying frontend code..."
 
 # Use conditional rendering (false &&) to disable the Date & Time section
 # This keeps valid JSX syntax and prevents rendering
-sed -i '74s|<div className={classes.detailRow}>|{false \&\& <div className={classes.detailRow}>|' "$FRONTEND_FILE"
-sed -i '79s|</div>|</div>}|' "$FRONTEND_FILE"
+sed -i '74s|                        <div className={classes.detailRow}>|                        {false \&\& <div className={classes.detailRow}>|' "$FRONTEND_FILE"
+sed -i '79s|                        </div>|                        </div>}|' "$FRONTEND_FILE"
 
 echo "✅ Date & Time field has been disabled!"
 echo ""

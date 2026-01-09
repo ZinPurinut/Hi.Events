@@ -25,7 +25,7 @@ if [ ! -f "$BACKUP_FILE" ]; then
 fi
 
 # Check if already enabled (no false && marker found)
-if ! grep -q "{false && <div className={classes.detailRow}>" "$FRONTEND_FILE"; then
+if ! grep -q "{false && <div className={classes\.detailRow}>" "$FRONTEND_FILE"; then
     echo "⚠️  Date & Time is already enabled!"
     exit 0
 fi
